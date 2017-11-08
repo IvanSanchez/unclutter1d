@@ -1,0 +1,23 @@
+{
+  "name": "unclutter1d",
+  "version": "0.1.0",
+  "description": "Unclutter segments in a one-dimensional domain",
+  "main": "unclutter1d.cjs.js",
+  "module": "unclutter1d.js",
+  "browser": "unclutter1d.browser.js",
+  "author": "Iván Sánchez Ortega <ivan@sanchezortega.es>",
+  "license": "BSD",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "jasmine": "^2.8.0",
+    "rollup": "^0.51.0",
+    "rollup-plugin-buble": "^0.17.0"
+  },
+  "scripts": {
+    "lint": "eslint unclutter1d.js",
+    "lintfix": "eslint --fix unclutter1d.js",
+    "test": "rollup -c rollup.config.js; jasmine",
+    "rollup": "rollup -c rollup.config.js"
+  }
+}
