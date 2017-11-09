@@ -23,6 +23,8 @@ the same labels but after the `unclutter1d` algorithm has been applied.
 
 ![](screenshot.png)
 
+You can also [see this demo for yourself](https://ivansanchez.github.io/unclutter1d/demo.html)
+
 Please note that for `unclutter1d` to work properly, the size (height) of the labels
 must be known in advance.
 
