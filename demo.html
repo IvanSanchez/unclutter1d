@@ -1,0 +1,144 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>unclutter1d demo</title>
+
+<script type="text/javascript" src="./dist/unclutter1d.browser.js"></script>
+
+</head>
+<body>
+
+
+<div id='demo-container' style='border:1px solid blue; position:relative'>
+<svg id='line-container' style='width: 100%; height: 100%;'></svg>
+
+</div>
+
+
+
+
+
+
+
+<script>
+
+// https://github.com/uxitten/polyfill/blob/master/string.polyfill.js
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function padStart(targetLength,padString) {
+        targetLength = targetLength>>0; //floor if number or convert non-number to 0;
+        padString = String(padString || ' ');
+        if (this.length > targetLength) {
+            return String(this);
+        }
+        else {
+            targetLength = targetLength-this.length;
+            if (targetLength > padString.length) {
+                padString += padString.repeat(targetLength/padString.length); //append to original to ensure we are longer than needed
+            }
+            return padString.slice(0,targetLength) + String(this);
+        }
+    };
+}
+
+
+
+var container = document.getElementById('demo-container');
+var svgContainer = document.getElementById('line-container');
+var numItems = 15;
+var containerHeight = 500;   // in px
+var itemHeight = 20;    // in px
+var itemWidth = 40;    // in px
+
+var items = [];
+var freeItems = [];
+var lines = [];
+
+container.style.height = containerHeight;
+container.style.width = itemWidth + 122;
+
+// Some init
+for(var i=0; i<numItems; i++) {
+    var item = document.createElement('div');
+
+    item.style.lineHeight =
+    item.style.height =
+    item.style.fontSize =
+        itemHeight + 'px';
+
+    item.style.width = itemWidth + 'px';
+    item.style.position='absolute';
+    item.style.border='1px solid black';
+    item.style.left='120px';
+
+    items.push(item);
+    container.appendChild(item);
+
+    var freeItem = document.createElement('div');
+
+    freeItem.style.lineHeight =
+    freeItem.style.height =
+    freeItem.style.fontSize =
+        itemHeight + 'px';
+
+    freeItem.style.width = itemWidth + 'px';
+    freeItem.style.position='absolute';
+    freeItem.style.border='1px solid black';
+
+    freeItems.push(freeItem);
+    container.appendChild(freeItem);
+
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.style.strokeWidth = '2';
+    line.style.stroke = 'black';
+    line.setAttribute("x1", itemWidth + 2);
+    line.setAttribute("x2", 120);
+    svgContainer.appendChild(line);
+
+    lines.push(line);
+}
+
+
+// Main loop function
+function reposition() {
+
+    var now = performance.now();
+
+    var heights = [];
+    var speedAccum = 0.05;
+
+    // Recalculate position for everything
+    for(var i=0; i<numItems; i++) {
+        var item = items[i];
+        var freeItem = freeItems[i];
+
+        var height = (containerHeight - itemHeight) * (Math.sin( speedAccum * now / 1000 ) / 2 + 0.5);
+        speedAccum *= 1.2;
+
+        heights.push([height, itemHeight]);
+
+        item.innerHTML = height.toFixed(0).padStart(3, '0');
+        freeItem.innerHTML = height.toFixed(0).padStart(3, '0');
+        freeItem.style.top = height + 'px';
+    }
+
+    // Do the magic!!!
+    var unclutteredHeights = unclutter1d(heights, 0, containerHeight);
+
+    // Display the just calculated magic
+    for(var i=0; i<numItems; i++) {
+        items[i].style.top = unclutteredHeights[i][0] + 'px';
+
+        lines[i].setAttribute("y1", heights[i][0] + (itemHeight / 2));
+        lines[i].setAttribute("y2", unclutteredHeights[i][0] + (itemHeight / 2));
+    }
+
+    requestAnimationFrame(reposition);
+}
+
+
+reposition();
+
+</script>
+
+</body>
+</html>

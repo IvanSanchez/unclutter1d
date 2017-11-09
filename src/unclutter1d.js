@@ -21,21 +21,22 @@
  * let uncluttered = unclutter1d(segments);
  * ```
  *
- * The input is *assumed* to be ordered, with the starts of each segment in ascending order.
- *
  */
 
 
 export default function unclutter1d(segments, min=-Infinity, max=Infinity) {
 
-    // First pass: create a data structure with: start, total lenght, array of lenghts
+    // First pass: create a data structure with: start, total lenght, array
+    // of (lenght, index)s
     let groups = [];
     let totalLength = 0;
     for (let i in segments) {
         const [ start, length ] = segments[i];
-        groups.push([start, length, [length]]);
+        groups.push([start, length, [length, i]]);
         totalLength += length;
     }
+
+    groups = groups.sort(function(a,b){ return a[0] - b[0]; });
 
     // Edge case: the items don't fit between min and max
     if (totalLength > (max - min)) {
@@ -43,10 +44,10 @@ export default function unclutter1d(segments, min=-Infinity, max=Infinity) {
         throw new Error('FIXME');
     }
 
-//     let converged = false;
-//
-//     while (!converged) {
-//         converged = true;
+
+    // Main pass: check if each item is overlapping with the previous one.
+    // if it is, merge both of them in a larger item, with its center at
+    // the weighed center of the merged items.
     let l = groups.length;
 
     if (l) {
@@ -58,8 +59,6 @@ export default function unclutter1d(segments, min=-Infinity, max=Infinity) {
             const currLength = groups[i  ][1];
 
             if (prevEnd > currStart) {
-                console.log('overlap: ', prevEnd, currStart);
-
                 const prevItems  = groups[i-1][2];
                 const currItems  = groups[i  ][2];
                 const prevWeight = prevItems.length;
@@ -68,30 +67,35 @@ export default function unclutter1d(segments, min=-Infinity, max=Infinity) {
                 const currCenter = currStart + (currLength / 2);
                 const mergedLength = prevLength + currLength;
                 const mergedCenter = ((prevCenter * prevWeight) + (currCenter * currWeight)) / (prevWeight + currWeight);
-                const mergedStart = mergedCenter - (mergedLength / 2);
+                let mergedStart = mergedCenter - (mergedLength / 2);
+                mergedStart = Math.max(min, mergedStart);
+                mergedStart = Math.min(max - mergedLength, mergedStart);
+
                 const merged = [ mergedStart, mergedLength, prevItems.concat(currItems) ];
 
-//                 console.log(merged);
-
-                console.log(groups);
                 groups.splice(i-1, 2, merged);
-                console.log(groups);
                 l--;
+
+                // Merging groups means that the just merged group *might* start
+                // before, so we have to roll back one item
+
+                if (i>1) { i--; }
             } else {
                 i++;
             }
         }
     }
 
-    // Final pass: split the groups back into (now adjacent) segments
-    l = groups.length;
+    // Final pass: split the groups back into (now adjacent) segments, and
+    // keep the original order
     let outSegments = [];
     for (let i=0; i<l; i++) {
         const m = groups[i][2].length;
         let groupStart = groups[i][0];
-        for (let j=0; j<m; j++) {
+        for (let j=0; j<m; j+=2) {
             const segmentLength = groups[i][2][j];
-            outSegments.push([groupStart, segmentLength]);
+            const segmentIndex  = groups[i][2][j+1];
+            outSegments[segmentIndex] = ([groupStart, segmentLength]);
             groupStart += segmentLength;
         }
     }
