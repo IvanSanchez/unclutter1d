@@ -37,18 +37,28 @@ export default function unclutter1d(segments, min=-Infinity, max=Infinity) {
     }
 
     groups = groups.sort(function(a,b){ return a[0] - b[0]; });
+    let l = groups.length;
+    let outSegments = [];
 
     // Edge case: the items don't fit between min and max
     if (totalLength > (max - min)) {
-        /// FIXME!!!
-        throw new Error('FIXME');
+
+        // Squeeze all elements by a ratio, and return them together.
+        const ratio = totalLength / (max - min);
+        let start = min;
+
+        for (let i=0; i<l; i++) {
+            const segmentLength = segments[i][1] / ratio;
+            outSegments.push([ start, segmentLength ]);
+            start += segmentLength;
+        }
+        return outSegments;
     }
 
 
     // Main pass: check if each item is overlapping with the previous one.
     // if it is, merge both of them in a larger item, with its center at
     // the weighed center of the merged items.
-    let l = groups.length;
 
     if (l) {
         for (let i=1; i<l; ) {
@@ -88,7 +98,6 @@ export default function unclutter1d(segments, min=-Infinity, max=Infinity) {
 
     // Final pass: split the groups back into (now adjacent) segments, and
     // keep the original order
-    let outSegments = [];
     for (let i=0; i<l; i++) {
         const m = groups[i][2].length;
         let groupStart = groups[i][0];

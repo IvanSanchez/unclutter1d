@@ -1,6 +1,6 @@
 {
   "name": "unclutter1d",
-  "version": "0.1.0+rc1",
+  "version": "0.2.0",
   "description": "Unclutter segments in a one-dimensional domain",
   "main": "dist/unclutter1d.cjs.js",
   "module": "src/unclutter1d.js",

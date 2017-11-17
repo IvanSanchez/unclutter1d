@@ -95,4 +95,38 @@ describe("unclutter1d()", function() {
     });
 
 
+
+    describe("domain too small to fit everything", function() {
+        it('With one element', () => {
+            expect(unclutter1d(
+                [[0, 10]],
+                5,
+                7
+            )).toEqual(
+                [[5, 2]]
+            );
+        });
+
+        it('With two elements', () => {
+            expect(unclutter1d(
+                [[0, 10], [5, 10]],
+                0,
+                15
+            )).toEqual(
+                [[0, 7.5], [7.5, 7.5]]
+            );
+        });
+
+        it('With three elements', () => {
+            expect(unclutter1d(
+                [[0, 10], [1, 20], [2, 30]],
+                10,
+                13
+            )).toEqual(
+                [[10, 0.5], [10.5, 1], [11.5, 1.5]]
+            );
+        });
+    });
+
+
 });
