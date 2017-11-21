@@ -6,7 +6,7 @@
   "module": "src/unclutter1d.js",
   "browser": "dist/unclutter1d.browser.js",
   "author": "Iván Sánchez Ortega <ivan@sanchezortega.es>",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "devDependencies": {
     "eslint": "^4.10.0",
     "jasmine": "^2.8.0",
