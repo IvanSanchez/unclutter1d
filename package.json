@@ -1,12 +1,16 @@
 {
   "name": "unclutter1d",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Unclutter segments in a one-dimensional domain",
   "main": "dist/unclutter1d.cjs.js",
   "module": "src/unclutter1d.js",
   "browser": "dist/unclutter1d.browser.js",
   "author": "Iván Sánchez Ortega <ivan@sanchezortega.es>",
   "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IvanSanchez/unclutter1d.git"
+  },
   "devDependencies": {
     "eslint": "^4.10.0",
     "jasmine": "^2.8.0",
